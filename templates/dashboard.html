@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Check-in at Work{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-tachometer-alt"></i> Today's Status</h4>
+            </div>
+            <div class="card-body">
+                {% if checkin_today %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-sign-in-alt text-success me-2"></i>
+                                <div>
+                                    <strong>Check-in:</strong> 
+                                    {{ checkin_today.check_in_time.strftime('%H:%M') if checkin_today.check_in_time else 'Not checked in' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-sign-out-alt text-danger me-2"></i>
+                                <div>
+                                    <strong>Check-out:</strong> 
+                                    {{ checkin_today.check_out_time.strftime('%H:%M') if checkin_today.check_out_time else 'Not checked out' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="badge bg-{% if checkin_today.status == 'on_time' %}success{% elif checkin_today.status == 'late' %}warning{% else %}secondary{% endif %}">
+                            {{ checkin_today.status.replace('_', ' ').title() }}
+                        </span>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No check-in record for today.</p>
+                {% endif %}
+                
+                <div class="d-flex gap-2">
+                    {% if not checkin_today or not checkin_today.check_in_time %}
+                        <form method="POST" action="{{ url_for('checkin.check_in') }}" class="d-inline">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-sign-in-alt"></i> Check In
+                            </button>
+                        </form>
+                    {% elif not checkin_today.check_out_time %}
+                        <form method="POST" action="{{ url_for('checkin.check_out') }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-sign-out-alt"></i> Check Out
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-success mb-0">
+                            <i class="fas fa-check-circle"></i> You have completed your work day!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock"></i> Current Time</h5>
+            </div>
+            <div class="card-body text-center">
+                <div id="current-time" class="h3 text-primary"></div>
+                <div id="current-date" class="text-muted"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history"></i> Recent Attendance</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_checkins %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for checkin in recent_checkins %}
+                                <tr>
+                                    <td>{{ checkin.date }}</td>
+                                    <td>{{ checkin.check_in_time.strftime('%H:%M') if checkin.check_in_time else '-' }}</td>
+                                    <td>{{ checkin.check_out_time.strftime('%H:%M') if checkin.check_out_time else '-' }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if checkin.status == 'on_time' %}success{% elif checkin.status == 'late' %}warning{% else %}secondary{% endif %}">
+                                            {{ checkin.status.replace('_', ' ').title() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No attendance records found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    
+    document.getElementById('current-time').textContent = timeString;
+    document.getElementById('current-date').textContent = dateString;
+}
+
+// Update time immediately and then every second
+updateTime();
+setInterval(updateTime, 1000);
+</script>
+{% endblock %}

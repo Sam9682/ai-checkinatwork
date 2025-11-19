@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  checkin-app:
+    build: .
+    ports:
+      - "${PORT:-6500}:5000"
+    environment:
+      FLASK_ENV: production
+      SECRET_KEY: ${SECRET_KEY:-checkin-secret-key}
+    volumes:
+      - ./data:/app/data
+      - ./templates:/app/templates
+      - ./static:/app/static
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${HTTPS_PORT:-6501}:443"
+      - "${HTTP_PORT:-6502}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - ./ssl/privkey.pem:/etc/ssl/private/privkey.pem:ro
+    depends_on:
+      - checkin-app
+    restart: unless-stopped
+
+volumes:
+  data:
