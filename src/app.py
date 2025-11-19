@@ -6,6 +6,7 @@ from .database import init_db
 from .routes.main_routes import main_bp
 from .routes.auth_routes import auth_bp
 from .routes.checkin_routes import checkin_bp
+from .routes.billing_routes import billing_bp
 
 def create_app():
     """Application factory"""
@@ -27,6 +28,13 @@ def create_app():
     def inject_language():
         return {'get_text': get_text, 'current_lang': get_language()}
     
+    @app.route('/set_language/<language>')
+    def set_language(language):
+        from flask import request, redirect, url_for
+        if language in TRANSLATIONS:
+            session['language'] = language
+        return redirect(request.referrer or url_for('main.dashboard'))
+    
     # Initialize database
     init_db()
     
@@ -34,5 +42,6 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(checkin_bp)
+    app.register_blueprint(billing_bp)
     
     return app

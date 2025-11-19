@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('billing_report') }} - AI Check-in at Work{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> {{ get_text('billing_report') }}</h4>
+            </div>
+            <div class="card-body">
+                <!-- Period Selection -->
+                <form method="GET" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">{{ get_text('period') }}</label>
+                            <select name="period" class="form-select" onchange="toggleCustomDates(this.value)">
+                                <option value="this_month" {% if period == 'this_month' %}selected{% endif %}>{{ get_text('this_month') }}</option>
+                                <option value="last_month" {% if period == 'last_month' %}selected{% endif %}>{{ get_text('last_month') }}</option>
+                                <option value="custom" {% if period == 'custom' %}selected{% endif %}>{{ get_text('custom_period') }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3" id="start-date-col" style="display: {% if period == 'custom' %}block{% else %}none{% endif %};">
+                            <label class="form-label">{{ get_text('from_date') }}</label>
+                            <input type="date" name="start_date" class="form-control" value="{{ custom_start or start_date }}">
+                        </div>
+                        <div class="col-md-3" id="end-date-col" style="display: {% if period == 'custom' %}block{% else %}none{% endif %};">
+                            <label class="form-label">{{ get_text('to_date') }}</label>
+                            <input type="date" name="end_date" class="form-control" value="{{ custom_end or end_date }}">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> {{ get_text('generate_report') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Summary Cards -->
+                {% if billing_data.records %}
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">{{ get_text('hours_worked') }}</h6>
+                                        <h4>{{ billing_data.total_hours }}h</h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-clock fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">{{ get_text('hourly_rate') }}</h6>
+                                        <h4>${{ "%.2f"|format(billing_data.hourly_rate) }}</h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-dollar-sign fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">{{ get_text('total_cost') }}</h6>
+                                        <h4>${{ "%.2f"|format(billing_data.total_cost) }}</h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-calculator fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Work Days</h6>
+                                        <h4>{{ billing_data.records|length }}</h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-calendar-day fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Records -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{{ get_text('date') }}</th>
+                                <th>{{ get_text('check_in') }}</th>
+                                <th>{{ get_text('check_out') }}</th>
+                                <th>{{ get_text('hours_worked') }}</th>
+                                <th>{{ get_text('hourly_rate') }}</th>
+                                <th>{{ get_text('total_cost') }}</th>
+                                <th>{{ get_text('status') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in billing_data.records %}
+                            <tr>
+                                <td>{{ record.date }}</td>
+                                <td>{{ record.check_in }}</td>
+                                <td>{{ record.check_out }}</td>
+                                <td>{{ record.hours_worked }}h</td>
+                                <td>${{ "%.2f"|format(record.hourly_rate) }}</td>
+                                <td>${{ "%.2f"|format(record.cost) }}</td>
+                                <td>
+                                    <span class="badge bg-{% if record.status == 'on_time' %}success{% elif record.status == 'late' %}warning{% else %}secondary{% endif %}">
+                                        {{ record.status.replace('_', ' ').title() }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-dark">
+                                <th colspan="3">Total</th>
+                                <th>{{ billing_data.total_hours }}h</th>
+                                <th>-</th>
+                                <th>${{ "%.2f"|format(billing_data.total_cost) }}</th>
+                                <th>-</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> {{ get_text('no_billing_data') }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleCustomDates(period) {
+    const startCol = document.getElementById('start-date-col');
+    const endCol = document.getElementById('end-date-col');
+    
+    if (period === 'custom') {
+        startCol.style.display = 'block';
+        endCol.style.display = 'block';
+    } else {
+        startCol.style.display = 'none';
+        endCol.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

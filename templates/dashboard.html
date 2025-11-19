@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - AI Check-in at Work{% endblock %}
+{% block title %}{{ get_text('dashboard') }} - AI Check-in at Work{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0"><i class="fas fa-tachometer-alt"></i> Today's Status</h4>
+                <h4 class="mb-0"><i class="fas fa-tachometer-alt"></i> {{ get_text('today_status') }}</h4>
             </div>
             <div class="card-body">
                 {% if checkin_today %}
@@ -16,8 +16,8 @@
                             <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-sign-in-alt text-success me-2"></i>
                                 <div>
-                                    <strong>Check-in:</strong> 
-                                    {{ checkin_today.check_in_time[:5] if checkin_today.check_in_time else 'Not checked in' }}
+                                    <strong>{{ get_text('check_in') }}:</strong> 
+                                    {{ checkin_today.check_in_time.split(' ')[1][:5] if checkin_today.check_in_time else get_text('not_checked_in') }}
                                 </div>
                             </div>
                         </div>
@@ -25,8 +25,8 @@
                             <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-sign-out-alt text-danger me-2"></i>
                                 <div>
-                                    <strong>Check-out:</strong> 
-                                    {{ checkin_today.check_out_time[:5] if checkin_today.check_out_time else 'Not checked out' }}
+                                    <strong>{{ get_text('check_out') }}:</strong> 
+                                    {{ checkin_today.check_out_time.split(' ')[1][:5] if checkin_today.check_out_time else get_text('not_checked_out') }}
                                 </div>
                             </div>
                         </div>
@@ -37,25 +37,25 @@
                         </span>
                     </div>
                 {% else %}
-                    <p class="text-muted">No check-in record for today.</p>
+                    <p class="text-muted">{{ get_text('no_checkin_today') }}</p>
                 {% endif %}
                 
                 <div class="d-flex gap-2">
                     {% if not checkin_today or not checkin_today.check_in_time %}
                         <form method="POST" action="{{ url_for('checkin.check_in') }}" class="d-inline">
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-sign-in-alt"></i> Check In
+                                <i class="fas fa-sign-in-alt"></i> {{ get_text('check_in') }}
                             </button>
                         </form>
                     {% elif not checkin_today.check_out_time %}
                         <form method="POST" action="{{ url_for('checkin.check_out') }}" class="d-inline">
                             <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-sign-out-alt"></i> Check Out
+                                <i class="fas fa-sign-out-alt"></i> {{ get_text('check_out') }}
                             </button>
                         </form>
                     {% else %}
                         <div class="alert alert-success mb-0">
-                            <i class="fas fa-check-circle"></i> You have completed your work day!
+                            <i class="fas fa-check-circle"></i> {{ get_text('work_day_complete') }}
                         </div>
                     {% endif %}
                 </div>
@@ -66,7 +66,7 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-clock"></i> Current Time</h5>
+                <h5 class="mb-0"><i class="fas fa-clock"></i> {{ get_text('current_time') }}</h5>
             </div>
             <div class="card-body text-center">
                 <div id="current-time" class="h3 text-primary"></div>
@@ -80,7 +80,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-history"></i> Recent Attendance</h5>
+                <h5 class="mb-0"><i class="fas fa-history"></i> {{ get_text('attendance_history') }}</h5>
             </div>
             <div class="card-body">
                 {% if recent_checkins %}
@@ -88,18 +88,18 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Status</th>
+                                    <th>{{ get_text('date') }}</th>
+                                    <th>{{ get_text('check_in') }}</th>
+                                    <th>{{ get_text('check_out') }}</th>
+                                    <th>{{ get_text('status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for checkin in recent_checkins %}
                                 <tr>
                                     <td>{{ checkin.date }}</td>
-                                    <td>{{ checkin.check_in_time[:5] if checkin.check_in_time else '-' }}</td>
-                                    <td>{{ checkin.check_out_time[:5] if checkin.check_out_time else '-' }}</td>
+                                    <td>{{ checkin.check_in_time.split(' ')[1][:5] if checkin.check_in_time else '-' }}</td>
+                                    <td>{{ checkin.check_out_time.split(' ')[1][:5] if checkin.check_out_time else '-' }}</td>
                                     <td>
                                         <span class="badge bg-{% if checkin.status == 'on_time' %}success{% elif checkin.status == 'late' %}warning{% else %}secondary{% endif %}">
                                             {{ checkin.status.replace('_', ' ').title() }}
@@ -111,7 +111,7 @@
                         </table>
                     </div>
                 {% else %}
-                    <p class="text-muted">No attendance records found.</p>
+                    <p class="text-muted">{{ get_text('no_attendance_records') }}</p>
                 {% endif %}
             </div>
         </div>

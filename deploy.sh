@@ -11,6 +11,7 @@ DESCRIPTION=${5:-"Employee Check-in System"}
 # Port configuration
 APPLICATION_IDENTITY_NUMBER=6
 RANGE_START=6000
+RANGE_RESERVED=10
 PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
 
 set -e
@@ -85,9 +86,9 @@ DOMAIN=$DOMAIN
 SSL_EMAIL=$EMAIL
 
 # Port Configuration
-PORT=$((PORT_RANGE_BEGIN + USER_ID))
-HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID + 1))
-HTTP_PORT=$((PORT_RANGE_BEGIN + USER_ID + 2))
+PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
+HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1))
+HTTP_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 2))
 EOF
         
         chmod 600 "$ENV_FILE"
@@ -197,7 +198,7 @@ verify_deployment() {
     
     # Test application health
     sleep 10
-    PORT=$((PORT_RANGE_BEGIN + USER_ID))
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
     if curl -f -s "http://localhost:$PORT/" > /dev/null; then
         log_info "Application health check passed ✅"
     else
@@ -213,9 +214,9 @@ setup_firewall() {
     
     if command -v ufw &> /dev/null; then
         # Configure UFW if available
-        PORT=$((PORT_RANGE_BEGIN + USER_ID))
-        HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID + 1))
-        HTTP_PORT=$((PORT_RANGE_BEGIN + USER_ID + 2))
+        PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
+        HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1))
+        HTTP_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 2))
         
         sudo ufw allow $PORT/tcp
         sudo ufw allow $HTTPS_PORT/tcp

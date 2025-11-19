@@ -13,14 +13,31 @@
             <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
                 <i class="fas fa-clock"></i> AI Check-in at Work
             </a>
-            {% if session.employee_id %}
             <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">Welcome, {{ session.employee_name }}</span>
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-globe"></i> {{ 'EN' if current_lang == 'en' else 'FR' }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">English</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('set_language', language='fr') }}">Français</a></li>
+                    </ul>
+                </div>
+                {% if session.employee_id %}
+                <div class="navbar-nav">
+                    <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> {{ get_text('dashboard') }}
+                    </a>
+                    <a class="nav-link" href="{{ url_for('billing.billing_report') }}">
+                        <i class="fas fa-file-invoice-dollar"></i> {{ get_text('billing') }}
+                    </a>
+                </div>
+                <span class="navbar-text me-3">{{ get_text('welcome') }}, {{ session.employee_name }}</span>
                 <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt"></i> {{ get_text('logout') }}
                 </a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </nav>
 

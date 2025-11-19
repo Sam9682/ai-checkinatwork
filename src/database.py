@@ -55,14 +55,36 @@ def init_db():
         )
     ''')
     
+    # Billing rates table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS billing_rates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            employee_id INTEGER NOT NULL,
+            hourly_rate DECIMAL(10,2) NOT NULL DEFAULT 25.00,
+            effective_date DATE NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (employee_id) REFERENCES employees (id)
+        )
+    ''')
+    
     # Create default admin employee
     cursor.execute('SELECT COUNT(*) FROM employees WHERE username = ?', ('admin',))
     if cursor.fetchone()[0] == 0:
-        admin_password_hash = generate_password_hash('password')
+        admin_password_hash = generate_password_hash('admin123')
         cursor.execute('''
             INSERT INTO employees (employee_id, username, email, password_hash, first_name, last_name, department, position)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', ('EMP001', 'admin', 'admin@company.com', admin_password_hash, 'System', 'Administrator', 'IT', 'Admin'))
+        
+        # Get the admin employee ID
+        admin_id = cursor.lastrowid
+        
+        # Create default billing rate for admin
+        cursor.execute('''
+            INSERT INTO billing_rates (employee_id, hourly_rate, effective_date)
+            VALUES (?, ?, ?)
+        ''', (admin_id, 25.00, datetime.now().date()))
     
     conn.commit()
     conn.close()
