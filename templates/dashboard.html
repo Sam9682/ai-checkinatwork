@@ -17,7 +17,7 @@
                                 <i class="fas fa-sign-in-alt text-success me-2"></i>
                                 <div>
                                     <strong>Check-in:</strong> 
-                                    {{ checkin_today.check_in_time.strftime('%H:%M') if checkin_today.check_in_time else 'Not checked in' }}
+                                    {{ checkin_today.check_in_time[:5] if checkin_today.check_in_time else 'Not checked in' }}
                                 </div>
                             </div>
                         </div>
@@ -26,7 +26,7 @@
                                 <i class="fas fa-sign-out-alt text-danger me-2"></i>
                                 <div>
                                     <strong>Check-out:</strong> 
-                                    {{ checkin_today.check_out_time.strftime('%H:%M') if checkin_today.check_out_time else 'Not checked out' }}
+                                    {{ checkin_today.check_out_time[:5] if checkin_today.check_out_time else 'Not checked out' }}
                                 </div>
                             </div>
                         </div>
@@ -98,8 +98,8 @@
                                 {% for checkin in recent_checkins %}
                                 <tr>
                                     <td>{{ checkin.date }}</td>
-                                    <td>{{ checkin.check_in_time.strftime('%H:%M') if checkin.check_in_time else '-' }}</td>
-                                    <td>{{ checkin.check_out_time.strftime('%H:%M') if checkin.check_out_time else '-' }}</td>
+                                    <td>{{ checkin.check_in_time[:5] if checkin.check_in_time else '-' }}</td>
+                                    <td>{{ checkin.check_out_time[:5] if checkin.check_out_time else '-' }}</td>
                                     <td>
                                         <span class="badge bg-{% if checkin.status == 'on_time' %}success{% elif checkin.status == 'late' %}warning{% else %}secondary{% endif %}">
                                             {{ checkin.status.replace('_', ' ').title() }}
