@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Reports - AI Check-in at Work{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Activity Reports</h4>
+            </div>
+            <div class="card-body">
+                <!-- Period Selection -->
+                <form method="GET" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Report Period</label>
+                            <select name="period" class="form-select" onchange="this.form.submit()">
+                                <option value="day" {% if period == 'day' %}selected{% endif %}>Today</option>
+                                <option value="week" {% if period == 'week' %}selected{% endif %}>This Week</option>
+                                <option value="month" {% if period == 'month' %}selected{% endif %}>This Month</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+                <h5>{{ activity_data.title }}</h5>
+
+                {% if activity_data.activities %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                {% if activity_data.is_summary %}
+                                    <th>Days Worked</th>
+                                    <th>Check-ins</th>
+                                    <th>Late Days</th>
+                                    {% if activity_data.show_hours %}
+                                        <th>Avg Hours/Day</th>
+                                    {% endif %}
+                                {% else %}
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Status</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in activity_data.activities %}
+                            <tr>
+                                <td>{{ activity.username }}</td>
+                                <td>{{ activity.first_name }} {{ activity.last_name }}</td>
+                                {% if activity_data.is_summary %}
+                                    <td>{{ activity.days_worked }}</td>
+                                    <td>{{ activity.check_ins }}</td>
+                                    <td>
+                                        {% if activity.late_days > 0 %}
+                                            <span class="badge bg-warning">{{ activity.late_days }}</span>
+                                        {% else %}
+                                            <span class="badge bg-success">0</span>
+                                        {% endif %}
+                                    </td>
+                                    {% if activity_data.show_hours %}
+                                        <td>{{ activity.avg_hours or '-' }}h</td>
+                                    {% endif %}
+                                {% else %}
+                                    <td>
+                                        {% if activity.check_in_time %}
+                                            {{ activity.check_in_time.split(' ')[1][:5] }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if activity.check_out_time %}
+                                            {{ activity.check_out_time.split(' ')[1][:5] }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if activity.status %}
+                                            <span class="badge bg-{% if activity.status == 'on_time' %}success{% elif activity.status == 'late' %}warning{% else %}secondary{% endif %}">
+                                                {{ activity.status.replace('_', ' ').title() }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">No activity</span>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No activity data found for the selected period.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

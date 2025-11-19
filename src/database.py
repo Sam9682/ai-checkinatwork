@@ -71,7 +71,7 @@ def init_db():
     # Create default admin employee
     cursor.execute('SELECT COUNT(*) FROM employees WHERE username = ?', ('admin',))
     if cursor.fetchone()[0] == 0:
-        admin_password_hash = generate_password_hash('admin123')
+        admin_password_hash = generate_password_hash('password')
         cursor.execute('''
             INSERT INTO employees (employee_id, username, email, password_hash, first_name, last_name, department, position)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)

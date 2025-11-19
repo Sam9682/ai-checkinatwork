@@ -12,6 +12,8 @@ Employee check-in timing management system built with Flask, following the same 
 - **Billing and cost tracking system**
 - **Time-based cost calculation with configurable hourly rates**
 - **Detailed billing reports with period selection**
+- **Admin user management system**
+- **User creation, editing, and deletion (admin only)**
 - Responsive web interface
 - Docker deployment with SSL support
 
@@ -34,6 +36,7 @@ python run_dev.py
 3. Access at http://localhost:5000
    - Dashboard: http://localhost:5000
    - Billing Report: http://localhost:5000/billing
+   - User Management (admin only): http://localhost:5000/admin/users
 
 ### Production Deployment
 
@@ -52,7 +55,7 @@ chmod +x deploy.sh
 ## Default Login
 
 - Username: `admin`
-- Password: `admin123`
+- Password: `password`
 - Default hourly rate: $25.00
 
 ## Management Commands
@@ -93,6 +96,10 @@ Work schedule settings can be configured in `src/config.py`:
 - `POST /checkout` - Record check-out time
 - `GET /api/status` - Get current check-in status (JSON)
 - `GET /billing` - View billing reports and cost analysis
+- `GET /admin/users` - User management (admin only)
+- `POST /admin/users/create` - Create new user (admin only)
+- `POST /admin/users/<id>/edit` - Edit user (admin only)
+- `POST /admin/users/<id>/delete` - Delete user (admin only)
 
 ## Billing System
 
@@ -111,6 +118,21 @@ The billing system calculates costs based on actual work hours:
 - Hourly rate management per employee
 - Export-ready detailed billing records
 - Visual summary cards with key metrics
+
+## Admin Features
+
+Admin users have access to additional management features:
+
+- **User Management**: Create, edit, and delete employee accounts
+- **Billing Rate Configuration**: Set individual hourly rates per employee
+- **User Status Control**: Activate/deactivate user accounts
+- **Comprehensive User Overview**: View all employees with their details and billing rates
+
+### Admin Access
+
+- Only users with username 'admin' can access admin features
+- Admin navigation appears automatically for admin users
+- Protected routes ensure only admins can perform management operations
 
 ## Security Features
 

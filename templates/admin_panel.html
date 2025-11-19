@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ get_text('admin_panel') }} - AI Check-in at Work{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-cog"></i> {{ get_text('admin_panel') }}</h4>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#purgeModal">
+                    <i class="fas fa-trash-alt"></i> {{ get_text('purge_all') }}
+                </button>
+            </div>
+            <div class="card-body">
+                {% if checkins %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>{{ get_text('date') }}</th>
+                                    <th>{{ get_text('check_in') }}</th>
+                                    <th>{{ get_text('check_out') }}</th>
+                                    <th>{{ get_text('status') }}</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for checkin in checkins %}
+                                <tr>
+                                    <td>{{ checkin.first_name }} {{ checkin.last_name }} ({{ checkin.emp_id }})</td>
+                                    <td>{{ checkin.date }}</td>
+                                    <td>{{ checkin.check_in_time[:5] if checkin.check_in_time else '-' }}</td>
+                                    <td>{{ checkin.check_out_time[:5] if checkin.check_out_time else '-' }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if checkin.status == 'on_time' %}success{% elif checkin.status == 'late' %}warning{% else %}secondary{% endif %}">
+                                            {{ checkin.status.replace('_', ' ').title() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('admin.delete_checkin', checkin_id=checkin.id) }}" class="d-inline" 
+                                              onsubmit="return confirm('{{ get_text('confirm_delete') }}')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i> {{ get_text('delete_record') }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">{{ get_text('no_attendance_records') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Purge Confirmation Modal -->
+<div class="modal fade" id="purgeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ get_text('purge_all') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">{{ get_text('confirm_purge') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('admin.purge_all') }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger">{{ get_text('purge_all') }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

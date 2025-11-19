@@ -90,9 +90,16 @@ def get_billing_data(conn, employee_id, start_date, end_date):
     
     for checkin in checkins:
         if checkin['check_in_time'] and checkin['check_out_time']:
-            # Parse datetime strings
-            check_in = datetime.strptime(checkin['check_in_time'], '%Y-%m-%d %H:%M:%S.%f')
-            check_out = datetime.strptime(checkin['check_out_time'], '%Y-%m-%d %H:%M:%S.%f')
+            # Parse datetime strings - handle both formats
+            try:
+                check_in = datetime.strptime(checkin['check_in_time'], '%Y-%m-%d %H:%M:%S.%f')
+            except ValueError:
+                check_in = datetime.strptime(checkin['check_in_time'], '%Y-%m-%d %H:%M:%S')
+            
+            try:
+                check_out = datetime.strptime(checkin['check_out_time'], '%Y-%m-%d %H:%M:%S.%f')
+            except ValueError:
+                check_out = datetime.strptime(checkin['check_out_time'], '%Y-%m-%d %H:%M:%S')
             
             # Calculate hours worked
             time_diff = check_out - check_in

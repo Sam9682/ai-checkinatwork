@@ -24,6 +24,22 @@
                     </ul>
                 </div>
                 {% if session.employee_id %}
+                {% if session.username == 'admin' %}
+                <div class="navbar-nav">
+                    <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> {{ get_text('dashboard') }}
+                    </a>
+                    <a class="nav-link" href="{{ url_for('billing.billing_report') }}">
+                        <i class="fas fa-file-invoice-dollar"></i> {{ get_text('billing') }}
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.manage_users') }}">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin.reports') }}">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                </div>
+                {% else %}
                 <div class="navbar-nav">
                     <a class="nav-link" href="{{ url_for('main.dashboard') }}">
                         <i class="fas fa-tachometer-alt"></i> {{ get_text('dashboard') }}
@@ -32,6 +48,7 @@
                         <i class="fas fa-file-invoice-dollar"></i> {{ get_text('billing') }}
                     </a>
                 </div>
+                {% endif %}
                 <span class="navbar-text me-3">{{ get_text('welcome') }}, {{ session.employee_name }}</span>
                 <a class="nav-link" href="{{ url_for('auth.logout') }}">
                     <i class="fas fa-sign-out-alt"></i> {{ get_text('logout') }}

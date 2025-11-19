@@ -279,7 +279,7 @@ main() {
     echo "🎉 Deployment completed successfully!"
     echo "===================================="
     echo "🌐 Web Interface: https://$DOMAIN"
-    echo "🔑 Demo Login: admin / admin123"
+    echo "🔑 Demo Login: admin / password"
     echo ""
     echo "📋 Next Steps:"
     echo "1. Test the application at https://$DOMAIN"

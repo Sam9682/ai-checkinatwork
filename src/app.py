@@ -7,6 +7,7 @@ from .routes.main_routes import main_bp
 from .routes.auth_routes import auth_bp
 from .routes.checkin_routes import checkin_bp
 from .routes.billing_routes import billing_bp
+from .routes.admin_routes import admin_bp
 
 def create_app():
     """Application factory"""
@@ -43,5 +44,6 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(checkin_bp)
     app.register_blueprint(billing_bp)
+    app.register_blueprint(admin_bp)
     
     return app

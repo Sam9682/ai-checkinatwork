@@ -21,7 +21,7 @@ def login():
         if employee and check_password_hash(employee['password_hash'], password):
             session['employee_id'] = employee['id']
             session['username'] = employee['username']
-            session['employee_name'] = f"{employee['first_name']} {employee['last_name']}"
+            session['employee_name'] = employee['username']  # Use username for admin check
             return redirect(url_for('main.dashboard'))
         else:
             flash('Invalid username or password')
