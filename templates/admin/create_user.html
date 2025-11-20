@@ -7,20 +7,20 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Create New User</h4>
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> {{ get_text('create_new_user') }}</h4>
             </div>
             <div class="card-body">
                 <form method="POST">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Employee ID</label>
+                                <label class="form-label">{{ get_text('employee_id') }}</label>
                                 <input type="text" name="employee_id" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Username</label>
+                                <label class="form-label">{{ get_text('username') }}</label>
                                 <input type="text" name="username" class="form-control" required>
                             </div>
                         </div>
@@ -29,32 +29,32 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">First Name</label>
+                                <label class="form-label">{{ get_text('first_name') }}</label>
                                 <input type="text" name="first_name" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Last Name</label>
+                                <label class="form-label">{{ get_text('last_name') }}</label>
                                 <input type="text" name="last_name" class="form-control" required>
                             </div>
                         </div>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Email</label>
+                        <label class="form-label">{{ get_text('email') }}</label>
                         <input type="email" name="email" class="form-control" required>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Password</label>
+                        <label class="form-label">{{ get_text('password') }}</label>
                         <input type="password" name="password" class="form-control" required>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Department</label>
+                                <label class="form-label">{{ get_text('department') }}</label>
                                 <input type="text" name="department" class="form-control">
                             </div>
                         </div>
@@ -67,16 +67,16 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Hourly Rate ($)</label>
+                        <label class="form-label">{{ get_text('hourly_rate') }} ($)</label>
                         <input type="number" name="hourly_rate" class="form-control" step="0.01" value="25.00" required>
                     </div>
                     
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Create User
+                            <i class="fas fa-save"></i> {{ get_text('create_user') }}
                         </button>
                         <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back
+                            <i class="fas fa-arrow-left"></i> {{ get_text('back') }}
                         </a>
                     </div>
                 </form>

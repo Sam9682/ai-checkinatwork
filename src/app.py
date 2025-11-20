@@ -19,7 +19,7 @@ def create_app():
     
     # Language support
     def get_language():
-        return session.get('language', 'en')
+        return session.get('language', 'fr')
 
     def get_text(key):
         lang = get_language()

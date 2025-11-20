@@ -7,18 +7,18 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="mb-0"><i class="fas fa-chart-bar"></i> Activity Reports</h4>
+                <h4 class="mb-0"><i class="fas fa-chart-bar"></i> {{ get_text('activity_reports') }}</h4>
             </div>
             <div class="card-body">
                 <!-- Period Selection -->
                 <form method="GET" class="mb-4">
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="form-label">Report Period</label>
+                            <label class="form-label">{{ get_text('report_period') }}</label>
                             <select name="period" class="form-select" onchange="this.form.submit()">
-                                <option value="day" {% if period == 'day' %}selected{% endif %}>Today</option>
-                                <option value="week" {% if period == 'week' %}selected{% endif %}>This Week</option>
-                                <option value="month" {% if period == 'month' %}selected{% endif %}>This Month</option>
+                                <option value="day" {% if period == 'day' %}selected{% endif %}>{{ get_text('today') }}</option>
+                                <option value="week" {% if period == 'week' %}selected{% endif %}>{{ get_text('this_week') }}</option>
+                                <option value="month" {% if period == 'month' %}selected{% endif %}>{{ get_text('this_month') }}</option>
                             </select>
                         </div>
                     </div>
@@ -31,19 +31,19 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Username</th>
-                                <th>Name</th>
+                                <th>{{ get_text('username') }}</th>
+                                <th>{{ get_text('name') }}</th>
                                 {% if activity_data.is_summary %}
-                                    <th>Days Worked</th>
-                                    <th>Check-ins</th>
-                                    <th>Late Days</th>
+                                    <th>{{ get_text('days_worked') }}</th>
+                                    <th>{{ get_text('check_ins') }}</th>
+                                    <th>{{ get_text('late_days') }}</th>
                                     {% if activity_data.show_hours %}
-                                        <th>Avg Hours/Day</th>
+                                        <th>{{ get_text('avg_hours_day') }}</th>
                                     {% endif %}
                                 {% else %}
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Status</th>
+                                    <th>{{ get_text('check_in') }}</th>
+                                    <th>{{ get_text('check_out') }}</th>
+                                    <th>{{ get_text('status') }}</th>
                                 {% endif %}
                             </tr>
                         </thead>
@@ -86,7 +86,7 @@
                                                 {{ activity.status.replace('_', ' ').title() }}
                                             </span>
                                         {% else %}
-                                            <span class="text-muted">No activity</span>
+                                            <span class="text-muted">{{ get_text('no_activity') }}</span>
                                         {% endif %}
                                     </td>
                                 {% endif %}
@@ -97,7 +97,7 @@
                 </div>
                 {% else %}
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> No activity data found for the selected period.
+                    <i class="fas fa-info-circle"></i> {{ get_text('no_activity_data') }}
                 </div>
                 {% endif %}
             </div>
