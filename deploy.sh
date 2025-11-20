@@ -162,15 +162,15 @@ deploy_services() {
     source "$ENV_FILE"
     
     # Stop existing services
-    docker-compose down 2>/dev/null || true
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose down 2>/dev/null || true
     
     # Build images
     log_info "Building Docker images..."
-    docker-compose build --no-cache
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose build --no-cache
     
     # Start services
     log_info "Starting production services..."
-    docker-compose --env-file "$ENV_FILE" up -d
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose --env-file "$ENV_FILE" up -d
     
     # Wait for services to be ready
     log_info "Waiting for services to start..."
@@ -181,7 +181,7 @@ deploy_services() {
         log_info "Services deployed successfully ✅"
     else
         log_error "Some services failed to start"
-        docker-compose logs
+        PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose logs
         exit 1
     fi
 }
@@ -298,14 +298,14 @@ main() {
 # Stop services
 stop_services() {
     log_info "Stopping AI Check-in at Work services..."
-    docker-compose down
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose down
     log_info "Services stopped successfully ✅"
 }
 
 # Restart services
 restart_services() {
     log_info "Restarting AI Check-in at Work services..."
-    docker-compose restart
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose restart
     log_info "Services restarted successfully ✅"
 }
 
@@ -313,7 +313,7 @@ restart_services() {
 check_status() {
     log_info "Checking AI Check-in at Work service status..."
     echo ""
-    docker-compose ps
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose ps
     echo ""
     
     if docker-compose ps | grep -q "Up"; then
@@ -326,7 +326,7 @@ check_status() {
 # Show logs
 show_logs() {
     log_info "Showing AI Check-in at Work logs..."
-    docker-compose logs -f
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose logs -f
 }
 
 # Handle script arguments
