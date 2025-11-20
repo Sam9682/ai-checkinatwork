@@ -15,7 +15,7 @@ try:
         print("🚀 Starting AI Check-in at Work Development Server")
         print("=" * 50)
         print("📍 URL: http://localhost:5000")
-        print("👤 Default Login: admin / admin123")
+        print("👤 Default Login: admin / password")
         print("💰 Billing Report: http://localhost:5000/billing")
         print("=" * 50)
         
