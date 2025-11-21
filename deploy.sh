@@ -4,15 +4,17 @@
 set -e
 
 # Global Variables
+APPLICATION_IDENTITY_NUMBER=4
+RANGE_START=6000
+RANGE_RESERVED=10
+PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
+
 COMMAND=${1:-help}
 USER_ID=${2:-0}
 USER_NAME=${3:-"user"}
 USER_EMAIL=${4:-"user@swautomorph.com"}
 DESCRIPTION=${5:-"Basic Information Display"}
-APPLICATION_IDENTITY_NUMBER=4
-RANGE_START=6000
-RANGE_RESERVED=10
-PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
+
 
 # Calculate ports (convert alphanumeric USER_ID to numeric for port calculation)
 calculate_ports() {
