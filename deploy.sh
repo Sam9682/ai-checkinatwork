@@ -1,20 +1,37 @@
 #!/bin/bash
 # AI Check-in at Work Production Deployment Script
 
-# Handle command line arguments
-COMMAND=${1:-help}
-USER_ID=${2:-1}
-USER_NAME=${3:-"User"}
-USER_EMAIL=${4:-"user@example.com"}
-DESCRIPTION=${5:-"Employee Check-in System"}
+set -e
 
-# Port configuration
-APPLICATION_IDENTITY_NUMBER=3
+# Global Variables
+COMMAND=${1:-help}
+USER_ID=${2:-0}
+USER_NAME=${3:-"user"}
+USER_EMAIL=${4:-"user@swautomorph.com"}
+DESCRIPTION=${5:-"Basic Information Display"}
+APPLICATION_IDENTITY_NUMBER=4
 RANGE_START=6000
 RANGE_RESERVED=10
 PORT_RANGE_BEGIN=$((APPLICATION_IDENTITY_NUMBER * 100 + RANGE_START))
 
-set -e
+# Calculate ports (convert alphanumeric USER_ID to numeric for port calculation)
+calculate_ports() {
+    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED))
+    HTTPS_PORT=$((PORT + 1))
+}
+
+# Display environment variables for operations
+show_environment() {
+    local operation=$1
+    echo "🔍 Starting $operation operation..."
+    echo "Environment Variables:"
+    echo "  USER_ID=${USER_ID}"
+    echo "  USER_NAME=${USER_NAME}"
+    echo "  USER_EMAIL=${USER_EMAIL}"
+    echo "  PORT=${PORT}"
+    echo "  HTTPS_PORT=${HTTPS_PORT}"
+    echo ""
+}
 
 echo "🚀 AI Check-in at Work Production Deployment"
 echo "============================================"
@@ -263,8 +280,9 @@ EOF
 }
 
 # Main deployment process
-main() {
+Starting() {
     log_info "Starting AI Check-in at Work production deployment..."
+    show_environment "start"
     
     check_prerequisites
     generate_secrets
@@ -298,6 +316,7 @@ main() {
 # Stop services
 stop_services() {
     log_info "Stopping AI Check-in at Work services..."
+    show_environment "stop"
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose down
     log_info "Services stopped successfully ✅"
 }
@@ -305,6 +324,7 @@ stop_services() {
 # Restart services
 restart_services() {
     log_info "Restarting AI Check-in at Work services..."
+    show_environment "restart"
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose restart
     log_info "Services restarted successfully ✅"
 }
@@ -312,6 +332,7 @@ restart_services() {
 # Check service status
 check_status() {
     log_info "Checking AI Check-in at Work service status..."
+    show_environment "ps"
     echo ""
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose ps
     echo ""
@@ -325,51 +346,57 @@ check_status() {
 
 # Show logs
 show_logs() {
+    show_environment "logs"
     log_info "Showing AI Check-in at Work logs..."
     PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose logs -f
 }
 
 # Handle script arguments
-case "${1:-help}" in
-    "start")
-        main
-        ;;
-    "ssl")
-        setup_ssl
-        ;;
-    "backup")
-        create_backup_script
-        ./backup.sh
-        ;;
-    "verify")
-        verify_deployment
-        ;;
-    "stop")
-        stop_services
-        ;;
-    "restart")
-        restart_services
-        ;;
-    "ps")
-        check_status
-        ;;
-    "logs")
-        show_logs
-        ;;
-    "help")
-        echo "Usage: $0 [start|ssl|backup|verify|stop|restart|ps|logs|help]"
-        echo "  start   - Full production deployment"
-        echo "  ssl     - Setup SSL certificates only"
-        echo "  backup  - Create database backup"
-        echo "  verify  - Verify deployment status"
-        echo "  stop    - Stop all services"
-        echo "  restart - Restart all services"
-        echo "  ps      - Check service status"
-        echo "  logs    - Show application logs"
-        echo "  help    - Show this help message (default)"
-        ;;
-    *)
-        echo "Usage: $0 [start|ssl|backup|verify|stop|restart|ps|logs|help]"
-        exit 1
-        ;;
-esac
+show_usage() {
+    show_environment "help"
+    echo "Usage: $0 [start|ssl|backup|verify|stop|restart|ps|logs|help]"
+    echo "  start   - Full production deployment"
+    echo "  ssl     - Setup SSL certificates only"
+    echo "  backup  - Create database backup"
+    echo "  verify  - Verify deployment status"
+    echo "  stop    - Stop all services"
+    echo "  restart - Restart all services"
+    echo "  ps      - Check service status"
+    echo "  logs    - Show application logs"
+    echo "  help    - Show this help message (default)"
+}
+
+# Main function - orchestrates the deployment process
+main() {
+    calculate_ports
+    
+    case $COMMAND in
+        "ps")
+            check_status
+            exit 0
+            ;;
+        "stop")
+            stop_services
+            exit 0
+            ;;
+        "logs")
+            show_logs
+            exit 0
+            ;;
+        "restart")
+            restart_services
+            exit 0
+            ;;
+        "start")
+            start
+            exit 0
+            ;;
+        *)
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+# Execute main function
+main "$@"
