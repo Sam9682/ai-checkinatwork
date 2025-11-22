@@ -4,7 +4,7 @@
 set -e
 
 # Global Variables
-NAME_OF_APPLICATION="AI-CHECKINATWORK"
+NAME_OF_APPLICATION="ai-checkinatwork"
 APPLICATION_IDENTITY_NUMBER=3
 RANGE_START=6000
 RANGE_RESERVED=10
@@ -84,7 +84,28 @@ check_prerequisites() {
         exit 1
     fi
     
+    # Check and install gitea if not present
+    if ! command -v gitea &> /dev/null; then
+        log_info "Gitea not found. Installing Gitea..."
+        install_gitea
+    else
+        log_info "Gitea is already installed"
+    fi
+    
     log_info "Prerequisites check passed ✅"
+}
+
+# Install Gitea
+install_gitea() {
+    log_info "Installing Gitea..."
+    
+    # Download and install Gitea binary
+    GITEA_VERSION="1.21.3"
+    wget -O gitea https://dl.gitea.io/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64
+    chmod +x gitea
+    sudo mv gitea /usr/local/bin/
+    
+    log_info "Gitea installed successfully ✅"
 }
 
 # Generate secure passwords
