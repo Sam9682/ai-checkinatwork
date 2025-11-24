@@ -38,10 +38,6 @@ show_environment() {
     echo ""
 }
 
-echo "🚀 ${NAME_OF_APPLICATION} Production Deployment"
-echo "=================================="
-
-
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -81,28 +77,7 @@ check_prerequisites() {
         exit 1
     fi
     
-    # Check and install gitea if not present
-    if ! command -v gitea &> /dev/null; then
-        log_info "Gitea not found. Installing Gitea..."
-        install_gitea
-    else
-        log_info "Gitea is already installed"
-    fi
-    
     log_info "Prerequisites check passed ✅"
-}
-
-# Install Gitea
-install_gitea() {
-    log_info "Installing Gitea..."
-    
-    # Download and install Gitea binary
-    GITEA_VERSION="1.21.3"
-    wget -O gitea https://dl.gitea.io/gitea/${GITEA_VERSION}/gitea-${GITEA_VERSION}-linux-amd64
-    chmod +x gitea
-    sudo mv gitea /usr/local/bin/
-    
-    log_info "Gitea installed successfully ✅"
 }
 
 # Generate secure passwords
@@ -336,22 +311,43 @@ restart_services() {
 
 # Check service status
 check_status() {
-    log_info "Checking ${NAME_OF_APPLICATION} service status..."
-    echo ""
-    PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml ps
-    echo ""
+    # Get parameters
+    params=$(jq -n --arg user_id "$USER_ID" \
+                  --arg user_name "$USER_NAME" \
+                  --arg user_email "$USER_EMAIL" \
+                  --arg port "$PORT" \
+                  --arg https_port "$HTTPS_PORT" \
+                  '{
+                    "USER_ID": $user_id,
+                    "USER_NAME": $user_name,
+                    "USER_EMAIL": $user_email,
+                    "PORT": $port,
+                    "HTTPS_PORT": $https_port
+                  }')
     
-    if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
-        log_info "${NAME_OF_APPLICATION} is running ✅"
-    else
-        log_warn "${NAME_OF_APPLICATION} is not running ⚠️"
+    # Check docker-compose status
+    docker_status="IS_NOT_RUNNING"
+    if PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED)) HTTPS_PORT=$((PORT_RANGE_BEGIN + USER_ID * RANGE_RESERVED + 1)) USER_ID=$USER_ID docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+        docker_status="IS_RUNNING"
     fi
+    
+    # Get git remote URLs
+    git_remotes=$(git remote -v 2>/dev/null | awk '{print $2}' | sort -u | jq -R . | jq -s .)
+    
+    # Output JSON
+    jq -n --argjson params "$params" \
+          --arg docker_status "$docker_status" \
+          --argjson git_remotes "$git_remotes" \
+          '{
+            "environment_vars": $params,
+            "docker_compose_ps": $docker_status,
+            "git_remote": $git_remotes
+          }'
 }
 
 # Main function - orchestrates the deployment process
 main() {
     calculate_ports
-    show_environment "${NAME_OF_APPLICATION}"
 
     case $COMMAND in
         "ps")
@@ -371,6 +367,9 @@ main() {
             exit 0
             ;;
         "start")
+            echo "🚀 ${NAME_OF_APPLICATION} Production Deployment"
+            echo "=================================="
+
             start
             exit 0
             ;;
