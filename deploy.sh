@@ -3,11 +3,8 @@
 
 set -e
 
-# Global Variables
-NAME_OF_APPLICATION="ai-checkinatwork"
-APPLICATION_IDENTITY_NUMBER=3
-RANGE_START=6000
-RANGE_RESERVED=10
+# Load configuration
+source deploy.ini
 
 # Global Parameters
 COMMAND=${1:-help}
