@@ -53,7 +53,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
 ```
 
 #### 2. deploy.sh (Universal Script)

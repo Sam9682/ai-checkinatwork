@@ -22,7 +22,7 @@ services:
       - "${HTTP_PORT:-6502}:80"
     container_name: ai-checkinatwork-nginx-${USER_ID:-1}
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - ./ssl/privkey.pem:/etc/ssl/private/privkey.pem:ro
     depends_on:
