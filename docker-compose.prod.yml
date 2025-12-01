@@ -4,7 +4,7 @@ services:
   checkin-app:
     build: .
     ports:
-      - "${PORT:-6500}:5000"
+      - "${HTTP_PORT:-6500}:5000"
     container_name: ai-checkinatwork-app-${USER_ID:-1}
     environment:
       FLASK_ENV: production
