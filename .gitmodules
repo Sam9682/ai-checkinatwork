@@ -1,6 +1,3 @@
 [submodule "shared"]
 	path = shared
 	url = https://github.com/Sam9682/ai-swautomorph--shared.git
-[submodule "ai-swautomorph--shared"]
-	path = ai-swautomorph--shared
-	url = https://github.com/Sam9682/ai-swautomorph--shared.git
