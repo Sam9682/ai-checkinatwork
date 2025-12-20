@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  checkin-app:
+  app:
     build: .
     ports:
       - "${HTTP_PORT:-6500}:5000"
@@ -25,7 +25,7 @@ services:
       - ./ssl/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - ./ssl/privkey.pem:/etc/ssl/private/privkey.pem:ro
     depends_on:
-      - checkin-app
+      - app
     restart: unless-stopped
 
 volumes:
