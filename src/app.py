@@ -11,7 +11,7 @@ from .routes.admin_routes import admin_bp
 
 def create_app():
     """Application factory"""
-    app = Flask(__name__, template_folder='../templates', static_folder='../static')
+    app = Flask(__name__, template_folder='/app/templates', static_folder='/app/static')
     app.secret_key = SECRET_KEY
     
     # Configure CORS
